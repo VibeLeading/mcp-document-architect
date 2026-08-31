@@ -1,0 +1,84 @@
+# mcp-document-architect
+
+The Ecosystem Connector.
+
+An MCP server granting NPC Agents read/write access to the corporate **paper trail**
+so their reports and cross-references always align with the Pilot's **Mission Script**
+(the high-fidelity strategic intent: outcome, scope, constraints, verification).
+
+## Context
+
+Agents acting inside the corporate ecosystem need a stable, shared document layer and
+a drafting discipline. This server:
+
+- exposes a document store of the corporate trail (`list` / `read` / `write` / `search`), and
+- turns a Mission Script into a structured report **outline + section scaffolds**, each
+  annotated with the requirement it must fulfill, so drafts stay aligned to intent.
+
+## Installation
+
+```bash
+npm install -g mcp-document-architect
+# or run directly without installing:
+npx mcp-document-architect
+```
+
+## Client configuration
+
+Add to your MCP client config (e.g. Claude Code `.mcp.json` or Cursor `mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "document-architect": {
+      "command": "npx",
+      "args": ["mcp-document-architect"]
+    }
+  }
+}
+```
+
+## Tools
+
+| Tool               | Description                                              | Key args                          |
+|--------------------|----------------------------------------------------------|-----------------------------------|
+| `list_documents`   | List documents in the paper trail                        | `folder?`                         |
+| `read_document`    | Read a document by path                                  | `path`                            |
+| `write_document`   | Create/overwrite a document (guarded, UTF-8)             | `path`, `content`                 |
+| `search_documents` | Case-insensitive ranked keyword search                   | `query`, `max_results?`           |
+| `draft_report`     | Mission Script → structured outline + scaffolds          | `title`, `mission_script`, `sections?` |
+
+## Environment variables
+
+| Variable        | Default        | Purpose                                  |
+|-----------------|----------------|------------------------------------------|
+| `MCP_DOCS_ROOT` | `~/.vlb-docs`  | Root directory of the document store      |
+
+Paths are resolved against the document root; any path that escapes the root is
+rejected (traversal-guarded).
+
+## Production adapters
+
+The backend is intentionally swappable. `src/document-store.ts` defines a single
+interface (`list` / `read` / `write` / `search` / `stat`) that a Google Workspace,
+Office 365, or SharePoint adapter can implement in place of the local filesystem
+store. Similarly, `src/drafter.ts` emits a normalized outline that an LLM provider
+can expand into full prose.
+
+## Drafting a Mission Script
+
+A mission script is plain text; the engine heuristically parses `outcome`, `scope`,
+`constraints`, and `verification` lines, then emits a deterministic outline with
+scaffolds and alignment notes.
+
+Example:
+```text
+Outcome: Ship the Q3 revenue report.
+Scope: Q3 actuals, regional breakdown, forecast deltas.
+Constraints: Accounting sign-off required; max 5 pages.
+Verification: Numbers reconcile to the general ledger.
+```
+
+## License
+
+MIT — Copyright (c) 2026 Jean Machuca
