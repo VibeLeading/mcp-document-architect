@@ -21,7 +21,16 @@ a drafting discipline. This server:
 npm install -g mcp-document-architect
 # or run directly without installing:
 npx mcp-document-architect
+# or run straight from the GitHub source (builds automatically):
+npx -y github:VibeLeading/mcp-document-architect
 ```
+
+## Requirements
+
+- **Node.js >= 22** — required. The server is ESM-only and uses modern Node
+  built-ins. On older Node versions the process fails to start, which MCP
+  clients report generically as "connection closed".
+- No other runtime dependencies — everything ships with the package.
 
 ## Client configuration
 
